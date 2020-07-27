@@ -45,11 +45,11 @@ class BaseTrainer(object):
                 self.use_gpu = True
 
         #------------------------------------checkpoint配置
-        self.checkpoint_dir = self.config.checkpoint['checkpoint_dir'].format(self.config.checkpoint['version'])
-        self.checkpoint_filename = os.path.join(self.checkpoint_dir,self.config.checkpoint['checkpoint_file_format'])
-        self.model_best_file = os.path.join(self.checkpoint_dir,self.config.checkpoint['model_best'])
-        self.log_filename = os.path.join(self.checkpoint_dir,self.config.checkpoint['log_file'])
-        self.save_period = self.config.checkpoint['save_period']
+        self.checkpoint_dir = self.config.Checkpoint['checkpoint_dir']
+        self.checkpoint_filename = os.path.join(self.checkpoint_dir, self.config.Checkpoint['checkpoint_file_format'])
+        self.model_best_file = os.path.join(self.checkpoint_dir, self.config.Checkpoint['model_best'])
+        self.log_filename = os.path.join(self.checkpoint_dir, self.config.Checkpoint['log_file'])
+        self.save_period = self.config.Checkpoint['save_period']
         
         #------------------------------------load checkpoint
         if self.config.CONFIG['load_model']:

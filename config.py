@@ -2,6 +2,7 @@ class Config(object):
     def __init__(self):
         self.ENV = 'default'            #当前的环境参数
         self.Introduce = 'Not at the moment'    #对此次实验的描述
+        self.VERSION = 1                #当前版本
 
 
         #------------------------------------------------GPU配置
@@ -72,9 +73,10 @@ class Config(object):
 
 
         #------------------------------------------------checkpoint
-        self.checkpoint = dict(
-            version = 1,                                #版本
-            checkpoint_dir = './checkpoint/'+self.CONFIG['dataset_name']+'_'+self.CONFIG['model_name']+'_V{}',            #checkpoint所在的文件夹
+        self.Checkpoint = dict(
+            checkpoint_dir = './checkpoint/{}_{}_V{}'.format(
+                self.CONFIG['dataset_name'], self.CONFIG['model_name'],
+                self.VERSION),                          # checkpoint 所在的文件夹
             checkpoint_file_format = self.CONFIG['model_name']+'_Epoch{}.pkl',     #模型文件名称格式，分别表示模型名称、Epoch
             model_best = 'model_best.ptk',            #最好的模型名称，暂时未用到
             log_file = 'log.log',                         #log文件名称
