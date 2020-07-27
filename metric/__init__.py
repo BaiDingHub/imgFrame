@@ -1,1 +1,1 @@
-from metric.classifyMetric import *
+from metric.classify_metric import *

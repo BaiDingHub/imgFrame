@@ -1,1 +1,1 @@
-from trainer.LeNetTrainer import *
+from trainer.classfication_trainer import *

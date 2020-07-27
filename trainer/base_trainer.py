@@ -7,10 +7,24 @@ from utils import *
 
 class BaseTrainer(object):
     """[Base class for all trainers]
+
+    Args:
+        self.model ([]): 要训练的模型
+        self.data_loader ([DataLoader]): 数据加载器
+        self.criterion ([nn.loss]): 损失函数
+        self.optimizer ([]): 优化器
+        self.config ([]): 配置类
+        self.checkpoint_dir ([str]): checkpoint文件夹
+        self.checkpoint_filename ([str]): checkpoint's filename
+        self.model_best_file ([str]): best checkpoint's filename
+        self.log_filename ([str]): log's filename
+        self.save_period ([int]): 存储checkpoint的周期
+        self.EPOCH ([int]): 训练的最大epoch
+        self.len_epoch ([int]): data_loader的batch数目
     """
-    def __init__(self,model,dataLoader,criterion,optimizer,metrics,config):
+    def __init__(self,model,data_loader,criterion,optimizer,metrics,config):
         self.model = model
-        self.dataLoader = dataLoader
+        self.data_loader = data_loader
         self.criterion = criterion
         self.optimizer = optimizer
         self.metrics = metrics
@@ -31,21 +45,21 @@ class BaseTrainer(object):
                 self.use_gpu = True
 
         #------------------------------------checkpoint配置
-        self.checkpointDir = self.config.checkpoint['checkpointDir'].format(self.config.checkpoint['VERSION'])
-        self.checkpointFilename = os.path.join(self.checkpointDir,self.config.checkpoint['checkpointFileFormat'])
-        self.modelBestFile = os.path.join(self.checkpointDir,self.config.checkpoint['modelBest'])
-        self.logFilename = os.path.join(self.checkpointDir,self.config.checkpoint['logFile'])
+        self.checkpoint_dir = self.config.checkpoint['checkpoint_dir'].format(self.config.checkpoint['version'])
+        self.checkpoint_filename = os.path.join(self.checkpoint_dir,self.config.checkpoint['checkpoint_file_format'])
+        self.model_best_file = os.path.join(self.checkpoint_dir,self.config.checkpoint['model_best'])
+        self.log_filename = os.path.join(self.checkpoint_dir,self.config.checkpoint['log_file'])
         self.save_period = self.config.checkpoint['save_period']
         
         #------------------------------------load checkpoint
         if self.config.CONFIG['load_model']:
-            self.loadModelFilename = self.config.LoadModel['filename']          #test时加载的模型位置
-            self._load_checkpoint()
+            model_filename = self.config.LoadModel['filename']          #test时加载的模型位置
+            self._load_checkpoint(model_filename)
 
             
         #------------------------------------训练配置
         self.EPOCH = self.config.ARG['epoch']
-        self.lenEpoch = len(self.dataLoader)
+        self.len_epoch = len(self.data_loader)
 
     
     def _train_epoch(self,epoch):
@@ -59,14 +73,16 @@ class BaseTrainer(object):
     def train(self):
         """[完整的训练逻辑]
         """
-        Log = self.config.logOutput()
-        logFile = self.file_open(self.checkpointDir,self.logFilename)
-        self.file_write(logFile,Log)
+        Log = self.config.log_output()
+        log_file = self.file_open(self.checkpoint_dir,self.log_filename)
+        log = {'config':Log}
+        self.file_write(log_file,log)
+
         self.model.train()
         for epoch in range(self.EPOCH):
             # optimizer adjust lr
             if self.config.CONFIG['adjust_lr']:
-                self.optimizer = adjust_learning_rate(self.optimizer,epoch=epoch,**self.config.LRAdjust)
+                self.optimizer = adjust_learning_rate(self.optimizer,epoch=epoch,**self.config.LrAdjust)
             
             result = self._train_epoch(epoch)
             
@@ -78,7 +94,7 @@ class BaseTrainer(object):
                 else:
                     log[key] = value
 
-            self.file_write(logFile,log)
+            self.file_write(log_file,log)
 
             for key, value in log.items():
                 print('    {:15s}: {}'.format(str(key), value))
@@ -91,11 +107,12 @@ class BaseTrainer(object):
     def test(self):
         """[完整的测试逻辑]
         """
-        Log = self.config.logOutput()
-        logFile = self.file_open(self.checkpointDir,self.logFilename)
+        Log = self.config.log_output()
+        log_file = self.file_open(self.checkpoint_dir,self.log_filename)
+
         self.model.eval()
         result = self._test_epoch()
-        log = {}
+        log = {'config':Log}
         for key, value in result.items():
             if key == 'metrics':
                 log.update({mtr.__name__: value[i] for i, mtr in enumerate(self.metrics)})
@@ -155,18 +172,21 @@ class BaseTrainer(object):
             'optimizer': self.optimizer.state_dict(),
             'config': self.config
         }
-        filename = self.checkpointFilename.format(epoch)
+        filename = self.checkpoint_filename.format(epoch)
         torch.save(state, filename)
         print("Saving checkpoint: {} ...".format(filename))
 
 
-    def _load_checkpoint(self):
+    def _load_checkpoint(self,model_filename):
         """[loading checkpoints]
+
+        Args:
+            model_filename ([str]): 预训练模型的文件名
         """
         message = "There's not checkpoint"
-        assert os.path.exists(self.loadModelFilename),message
-        print("Loading checkpoint: {} ...".format(self.loadModelFilename))
-        checkpoint = torch.load(self.loadModelFilename)
+        assert os.path.exists(model_filename),message
+        print("Loading checkpoint: {} ...".format(model_filename))
+        checkpoint = torch.load(model_filename)
         self.model.load_state_dict(checkpoint['state_dict'])
 
 

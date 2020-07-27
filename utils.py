@@ -18,7 +18,7 @@ def ensure_dir(dirname):
 
 
 
-def logWrite(file,log):
+def log_write(file, log):
     """[将log写入文件中]
 
     Args:
@@ -32,7 +32,7 @@ def logWrite(file,log):
     file.write(string)
 
 
-def adjust_learning_rate(optimizer,epoch,lr_step,lr_decay,increase_bottom=0,increase_amp=1.1):
+def adjust_learning_rate(optimizer, epoch, lr_step, lr_decay, increase_bottom=0, increase_amp=1.1):
     """[自定义自适应学习率变化，退火，学习率先上升后下降]
 
     Args:

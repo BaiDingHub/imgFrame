@@ -48,11 +48,16 @@ class Config(object):
         #--------------------------------数据集参数
         self.Mnist = dict(
             dirname = '/home/baiding/Desktop/Study/Deep/datasets/MNIST/raw',            #MNIST数据集存放的文件夹
-            needVector = False,         #False表示得到784维向量数据，True表示得到28*28的图片数据
+            is_vector = False,         #True表示得到784维向量数据，False表示得到28*28的图片数据
+        )
+
+        self.CIFAR10 = dict(
+            dirname = '/home/baiding/Desktop/Study/Deep/datasets/CIFAR10',              #CIFAR10数据集存放的文件夹
+            is_vector = False,         #True表示得到3072维向量数据，False表示得到3*32*32的图片数据
         )
         
         #------------------------------------------------学习率变化
-        self.LRAdjust = dict(
+        self.LrAdjust = dict(
             lr_step = 10,                   #学习率变化的间隔
             lr_decay = 0.1,                 #学习率变化的幅度
             increase_bottom = 5,            #退火前学习率增加的上界
@@ -68,16 +73,16 @@ class Config(object):
 
         #------------------------------------------------checkpoint
         self.checkpoint = dict(
-            VERSION = 1,                                #版本
-            checkpointDir = './checkpoint/'+self.CONFIG['dataset_name']+'_'+self.CONFIG['model_name']+'_V{}',            #checkpoint所在的文件夹
-            checkpointFileFormat = self.CONFIG['model_name']+'_Epoch{}.pkl',     #模型文件名称格式，分别表示模型名称、Epoch
-            modelBest = 'model_best.ptk',            #最好的模型名称，暂时未用到
-            logFile = 'log.log',                         #log文件名称
+            version = 1,                                #版本
+            checkpoint_dir = './checkpoint/'+self.CONFIG['dataset_name']+'_'+self.CONFIG['model_name']+'_V{}',            #checkpoint所在的文件夹
+            checkpoint_file_format = self.CONFIG['model_name']+'_Epoch{}.pkl',     #模型文件名称格式，分别表示模型名称、Epoch
+            model_best = 'model_best.ptk',            #最好的模型名称，暂时未用到
+            log_file = 'log.log',                         #log文件名称
             save_period = 1,                            #模型的存储间隔
         )
 
 
-    def logOutput(self):
+    def log_output(self):
         log = {}
         log['ENV'] = self.ENV
         log['Introduce'] = self.Introduce
