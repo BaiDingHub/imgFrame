@@ -15,7 +15,7 @@ if __name__ == '__main__':
     data_loader = DataLoader(dataset, batch_size = config.ARG['batch_size'], shuffle=True, num_workers=4)
     metrics = [getattr(module_metric, metric) for metric in config.CONFIG['metrics']]
 
-    model = getattr(module_model, config.CONFIG['model_name'])()
+    model = getattr(module_model, config.CONFIG['model_name'])(**getattr(config,config.CONFIG['model_name']))
     criterion = getattr(nn, config.CONFIG['criterion_name'])()
 
     optimizer = getattr(torch.optim, config.CONFIG['optimizer_name'])(model.parameters(),**getattr(config, config.CONFIG['optimizer_name']))
