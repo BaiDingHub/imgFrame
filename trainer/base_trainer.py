@@ -80,11 +80,11 @@ class BaseTrainer(object):
 
         self.model.train()
         for epoch in range(self.EPOCH):
+            
+            result = self._train_epoch(epoch)
             # optimizer adjust lr
             if self.config.CONFIG['adjust_lr']:
                 self.optimizer = adjust_learning_rate(self.optimizer,epoch=epoch,**self.config.LrAdjust)
-            
-            result = self._train_epoch(epoch)
             
             # save logged informations into log dict
             log = {'epoch':epoch}

@@ -15,7 +15,7 @@ if __name__ == '__main__':
     data_loader = DataLoader(dataset, batch_size = config.ARG['batch_size'], shuffle=False, num_workers=1)
     metrics = [getattr(module_metric, metric) for metric in config.CONFIG['metrics']]
 
-    model = getattr(module_model, config.CONFIG['model_name'])()
+    model = getattr(module_model, config.CONFIG['model_name'])(**getattr(config,config.CONFIG['model_name']))
     criterion = None
 
     optimizer = None
